@@ -92,6 +92,27 @@ header{
 .nav-links a{font-size:14.5px;font-weight:500;color:var(--ink);transition:color .2s;position:relative;}
 .nav-links a:hover{color:var(--green);}
 .nav-cta{display:flex;align-items:center;gap:14px;}
+.lang-toggle{
+  width:52px;
+  height:52px;
+  border-radius:999px;
+  border:1.5px solid var(--navy);
+  background:#fff;
+  color:var(--navy);
+  font-weight:800;
+  font-size:14px;
+  letter-spacing:.05em;
+  cursor:pointer;
+  transition:all .28s ease;
+}
+
+.lang-toggle:hover{
+  background:var(--green);
+  border-color:var(--green);
+  color:#fff;
+  transform:translateY(-3px);
+  box-shadow:0 12px 24px rgba(95,167,119,0.22);
+}
 .menu-toggle{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;}
 .menu-toggle span{width:24px;height:2px;background:var(--navy);border-radius:2px;}
 @media(max-width:900px){
@@ -2288,11 +2309,12 @@ section#login-modal-anchor{display:none;}
       <a href="#dashboard">Dashboard</a>
       <a href="#contact">Liên hệ</a>
     </nav>
-    <div class="nav-cta">
-      <a href="#" class="btn btn-outline" onclick="openModal('loginModal');return false;">Đăng nhập</a>
-      <button class="menu-toggle" id="menuToggle" aria-label="Menu"><span></span><span></span><span></span></button>
-    </div>
-  </div>
+   <div class="nav-cta">
+    <button class="lang-toggle" id="langToggle" type="button">EN</button>
+    <a href="#" class="btn btn-outline" onclick="openModal('loginModal');return false;">Đăng nhập</a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+   </div>
+     </div>
 </header>
 
 <!-- ============ HERO ============ -->
@@ -3092,6 +3114,269 @@ document.addEventListener('keydown', (e)=>{
     document.querySelectorAll('.modal-overlay.open').forEach(m=>closeModal(m.id));
   }
 });
+  /* ===== LANGUAGE TOGGLE VI / EN ===== */
+const TEXT_TRANSLATIONS = new Map([
+  [`Trang chủ`, `Home`],
+  [`Sứ mệnh`, `Mission`],
+  [`Tính năng`, `Features`],
+  [`Gói dịch vụ`, `Pricing`],
+  [`Dashboard`, `Dashboard`],
+  [`Liên hệ`, `Contact`],
+  [`Đăng nhập`, `Login`],
+
+  [`Trợ lý giọng nói cho người lớn tuổi`, `Voice assistant for older adults`],
+  [`Luôn có một người lắng nghe ba mẹ, ngay cả khi bạn`, `There is always someone listening to your parents, even when you are`],
+  [`bận rộn`, `busy`],
+  [`“H.R AI là người bạn giọng nói đồng hành cùng người lớn tuổi, giúp trò chuyện, nhắc nhở sinh hoạt và gửi những tín hiệu cần quan tâm đến gia đình một cách nhẹ nhàng, riêng tư.”`, `“H.R AI is a voice companion for older adults, helping them talk, receive daily reminders, and gently send important care signals to their family while respecting privacy.”`],
+  [`Đăng ký dùng thử`, `Start free trial`],
+  [`Liên hệ tư vấn`, `Get consultation`],
+  [`thời gian dùng pin`, `battery life`],
+  [`luôn đồng hành`, `always available`],
+  [`tôn trọng riêng tư`, `privacy respected`],
+  [`Nhắc uống thuốc & lịch khám`, `Medication & appointment reminders`],
+  [`Trò chuyện mỗi ngày`, `Daily conversations`],
+  [`Cảnh báo thông minh`, `Smart alerts`],
+  [`Kết nối gia đình`, `Family connection`],
+  [`Tôn trọng riêng tư`, `Privacy respected`],
+
+  [`Sứ mệnh & Giá trị cốt lõi`, `Mission & Core Values`],
+  [`Dùng công nghệ thấu cảm, để xóa nhòa sự cô đơn và thu hẹp khoảng cách thế hệ.`, `Using empathetic technology to ease loneliness and bridge the generation gap.`],
+  [`3 Giá trị cốt lõi`, `3 Core Values`],
+  [`Thấu cảm (Empathetic)`, `Empathy`],
+  [`Chúng tôi lắng nghe không chỉ để lấy thông tin, mà để thấu hiểu cảm xúc, phân tích những khoảng lặng và xoa dịu sự cô đơn bằng một chất giọng “đậm tính người”.`, `We listen not only to collect information, but to understand emotions, notice quiet moments, and ease loneliness with a more human voice.`],
+  [`Tôn trọng riêng tư (Dignified Privacy)`, `Dignified Privacy`],
+  [`Gắn kết (Invisible Bond)`, `Invisible Bond`],
+  [`Lắng nghe cả những điều chưa nói. Chúng tôi giúp con cháu bắt được những nhịp điệu chệch nhịp trong cuộc sống của ông bà, để tình yêu thương không bao giờ vắng mặt hay trễ hẹn.`, `We listen to what is left unsaid, helping families notice small changes in their loved ones’ daily rhythm so care is never absent or late.`],
+
+  [`Tính năng nổi bật`, `Key Features`],
+  [`Trò chuyện bằng giọng nói`, `Voice conversations`],
+  [`Hỗ trợ 15 ngôn ngữ giao tiếp, đặc biệt có khả năng lựa chọn giọng nói của người thân trong gia đình.`, `Supports 15 languages and can be personalized with a familiar family voice.`],
+  [`Nhắc nhở lịch trình`, `Schedule reminders`],
+  [`Nhắc nhở chính xác và đúng giờ, hệ thống hỗ trợ tự động hẹn giờ và lên lịch cho các hoạt động sinh hoạt theo yêu cầu.`, `Timely reminders with automatic scheduling for daily routines and personal activities.`],
+  [`Gọi điện & gửi tin nhắn`, `Calls & messages`],
+  [`Kết nối nhanh với người thân chỉ bằng một câu nói, không cần thao tác phức tạp.`, `Connect with family through simple voice commands, without complicated steps.`],
+  [`Phân tích cảm xúc`, `Emotion analysis`],
+  [`Nhận diện những thay đổi nhỏ trong giọng nói và cảm xúc theo thời gian.`, `Detects subtle changes in voice and emotional patterns over time.`],
+  [`Gửi thông báo ngay cho gia đình khi phát hiện các tín hiệu tín hiệu bất thường về sức khỏe hoặc tâm lý.`, `Sends family alerts when unusual health or emotional signals are detected.`],
+  [`Báo cáo tuần / tháng`, `Weekly / monthly reports`],
+  [`Tổng hợp ngắn gọn, dễ hiểu giúp gia đình nắm tình hình mà không cần theo dõi liên tục.`, `Provides simple summaries so families can stay informed without constant monitoring.`],
+
+  [`Chọn gói phù hợp với gia đình bạn`, `Choose the right plan for your family`],
+  [`Đồng hành mỗi ngày, đơn giản và ấm áp.`, `Simple, warm daily companionship.`],
+  [`Trò chuyện AI bằng giọng nói`, `AI voice conversations`],
+  [`Nhắc nhở thông minh`, `Smart reminders`],
+  [`Nhắc lịch sinh hoạt & báo thức`, `Daily routine reminders & alarms`],
+  [`Cập nhật tin tức cơ bản`, `Basic news updates`],
+  [`Xem chi tiết`, `View details`],
+  [`PHỔ BIẾN`, `POPULAR`],
+  [`Theo dõi xu hướng, an tâm hơn cho cả gia đình.`, `Trend tracking for greater family peace of mind.`],
+  [`Tất cả tính năng của Basic`, `All Basic features`],
+  [`Theo dõi mức độ tương tác`, `Interaction tracking`],
+  [`Phát hiện tín hiệu bất thường`, `Detect unusual signals`],
+  [`Cảnh báo thông minh cho con cháu`, `Smart alerts for family members`],
+  [`Báo cáo tuần / tháng + nhiều tài khoản`, `Weekly / monthly reports + multiple accounts`],
+
+  [`DASHBOARD CHO GIA ĐÌNH`, `FAMILY DASHBOARD`],
+  [`Một góc nhìn tổng quan, đủ để an tâm`, `A simple overview for peace of mind`],
+  [`Theo dõi xu hướng sinh hoạt và cảm xúc của người thân — không xem chi tiết nội dung trò chuyện.`, `Track lifestyle and emotional trends without viewing private conversation content.`],
+  [`Xin chào, Minh 👋`, `Hello, Minh 👋`],
+  [`Đang theo dõi:`, `Following:`],
+  [`Tình trạng hôm nay`, `Today’s status`],
+  [`Ổn định`, `Stable`],
+  [`Cập nhật lúc 14:30`, `Updated at 14:30`],
+  [`Số lần trò chuyện`, `Conversations`],
+  [`Hôm nay · +3 so với hôm qua`, `Today · +3 vs yesterday`],
+  [`Giấc ngủ đêm qua`, `Last night’s sleep`],
+  [`Chất lượng tốt`, `Good quality`],
+  [`Cảnh báo`, `Alert`],
+  [`Cần chú ý`, `Needs attention`],
+  [`Ít trò chuyện hơn bình thường vào chiều`, `Less conversation than usual in the afternoon`],
+  [`Tâm trạng gần đây (7 ngày)`, `Recent mood (7 days)`],
+  [`Xu hướng cảm xúc ổn định`, `Stable emotional trend`],
+  [`6/7 ngày có tín hiệu tích cực, chỉ một ngày cần chú ý nhẹ.`, `6 out of 7 days showed positive signals, with one day needing mild attention.`],
+  [`tích cực`, `positive`],
+  [`Điểm sáng`, `Positive sign`],
+  [`Trò chuyện đều hơn vào buổi sáng.`, `More regular conversations in the morning.`],
+  [`Cần chú ý`, `Needs attention`],
+  [`Thứ 4 ít tương tác hơn bình thường.`, `Lower interaction than usual on Wednesday.`],
+  [`Danh sách nhắc nhở`, `Reminder list`],
+  [`Uống thuốc huyết áp`, `Blood pressure medication`],
+  [`Hằng ngày · 8:00`, `Daily · 8:00`],
+  [`Lịch khám định kỳ`, `Regular check-up`],
+  [`Đi bộ buổi sáng`, `Morning walk`],
+  [`Hằng ngày · 6:30`, `Daily · 6:30`],
+  [`Gọi điện cho con`, `Call family`],
+  [`Hằng tuần · Chủ nhật`, `Weekly · Sunday`],
+
+  [`BÁO CÁO TUẦN`, `WEEKLY REPORT`],
+  [`Tổng kết nhẹ nhàng mỗi tuần`, `A gentle weekly summary`],
+  [`Một bản tóm tắt dễ hiểu, giúp gia đình nắm được điều gì đang diễn ra mà không cần theo dõi liên tục.`, `An easy-to-understand summary that helps families stay informed without constant monitoring.`],
+  [`Tổng số lần trò chuyện trong tuần`, `Total conversations this week`],
+  [`Vui vẻ`, `Happy`],
+  [`Tâm trạng tổng quan của tuần`, `Overall mood of the week`],
+  [`Chủ đề được nhắc nhiều nhất`, `Most mentioned topics`],
+  [`Gia đình`, `Family`],
+  [`Sức khỏe`, `Health`],
+  [`Thời tiết`, `Weather`],
+  [`Kỷ niệm xưa`, `Old memories`],
+  [`Tin tức`, `News`],
+  [`Lịch uống thuốc đã hoàn thành`, `Medication schedule completed`],
+  [`Trong tuần này`, `This week`],
+  [`Dấu hiệu bất thường`, `Unusual signs`],
+  [`Giảm tương tác vào thứ Tư`, `Lower interaction on Wednesday`],
+  [`Số lần trò chuyện thấp hơn 30% so với trung bình`, `Conversation count was 30% lower than average`],
+  [`Đề xuất hành động cho gia đình`, `Suggested actions for family`],
+  [`Gọi điện hỏi thăm vào giữa tuần`, `Make a midweek check-in call`],
+  [`Nhắc lại lịch khám sắp tới`, `Remind about the upcoming appointment`],
+  [`Khen ngợi vì đã duy trì uống thuốc đều đặn`, `Encourage consistent medication habits`],
+
+  [`Bắt đầu chăm sóc người thân theo cách nhẹ nhàng hơn.`, `Start caring for your loved ones in a gentler way.`],
+  [`H.R AI giúp bạn lắng nghe, ghi nhớ và quan tâm đến những thay đổi nhỏ của người thân ngay cả khi bạn không thể ở bên mỗi ngày.`, `H.R AI helps you listen, remember, and care for small changes in your loved ones, even when you cannot be there every day.`],
+  [`"Một lời nhắc đúng lúc. Một cuộc gọi đúng giờ han hỏi. Một sự quan tâm ngọt ngào tuyệt đối không trễ hẹn."`, `"A timely reminder. A thoughtful call. A gentle act of care that never comes too late."`],
+  [`Trợ lý giọng nói đồng hành cùng người lớn tuổi - kết nối yêu thương giữa các thế hệ.`, `A voice assistant for older adults, connecting care across generations.`],
+  [`Sản phẩm`, `Product`],
+  [`Giới thiệu`, `Overview`],
+  [`Công ty`, `Company`],
+  [`Ngũ Hành Sơn, Đà Nẵng, Việt Nam`, `Ngu Hanh Son, Da Nang, Vietnam`],
+  [`© 2026 H.R AI – Hear & Remember. Bảo lưu mọi quyền.`, `© 2026 H.R AI – Hear & Remember. All rights reserved.`],
+
+  [`Gói Basic - $29`, `Basic Plan - $29`],
+  [`Đồng hành mỗi ngày, đơn giản và ấm áp. Phù hợp cho gia đình muốn bắt đầu nhẹ nhàng.`, `Simple and warm daily companionship. Suitable for families who want to start gently.`],
+  [`Nhắc uống thuốc`, `Medication reminders`],
+  [`Nhắc lịch sinh hoạt`, `Daily routine reminders`],
+  [`Báo thức`, `Alarm`],
+  [`Thông tin sản phẩm`, `Product information`],
+  [`Gói Basic dành cho nhu cầu đồng hành hằng ngày.`, `Basic plan for everyday companionship.`],
+  [`Thiết bị đi kèm`, `Included device`],
+  [`01 robot H.R AI Basic.`, `01 H.R AI Basic robot.`],
+  [`Kích thước`, `Size`],
+  [`Cao khoảng 8.5cm, nhỏ gọn để bàn.`, `About 8.5cm tall, compact for a desk or table.`],
+  [`Thời lượng pin`, `Battery life`],
+  [`Sử dụng khoảng 3–4 ngày.`, `Lasts about 3–4 days.`],
+  [`Kết nối Wi-Fi và ứng dụng trên điện thoại.`, `Connects to Wi-Fi and the family mobile app.`],
+  [`Đăng ký mua`, `Register to buy`],
+  [`Họ và tên`, `Full name`],
+  [`Số điện thoại`, `Phone number`],
+  [`Địa chỉ giao thiết bị`, `Delivery address`],
+  [`Xác nhận đăng ký`, `Confirm registration`],
+  [`✓ Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn trong 24 giờ.`, `✓ Registration successful! We will contact you within 24 hours.`],
+  [`Khách hàng nói gì về H.R AI Basic`, `What customers say about H.R AI Basic`],
+  [`Chị Hương - TP. Hồ Chí Minh`, `Ms. Huong - Ho Chi Minh City`],
+  [`Mẹ tôi rất thích nói chuyện với H.R AI mỗi tối. Nhắc thuốc đúng giờ làm tôi an tâm hơn nhiều.`, `My mother enjoys talking with H.R AI every evening. Timely medication reminders give me much more peace of mind.`],
+  [`Anh Tuấn - Đà Nẵng`, `Mr. Tuan - Da Nang`],
+  [`Thiết bị dễ dùng, ba tôi không quen công nghệ vẫn thao tác được ngay từ ngày đầu.`, `The device is easy to use. My father is not tech-savvy but could use it from the first day.`],
+
+  [`Gói Care Plus - $49`, `Care Plus Plan - $49`],
+  [`Theo dõi xu hướng toàn diện hơn, an tâm hơn cho cả gia đình với cảnh báo thông minh.`, `More comprehensive trend tracking and smart alerts for greater family peace of mind.`],
+  [`Nhiều tài khoản người thân`, `Multiple family accounts`],
+  [`Gói Care Plus dành cho gia đình cần theo dõi sâu hơn.`, `Care Plus plan for families who need deeper monitoring.`],
+  [`01 robot H.R AI Care Plus.`, `01 H.R AI Care Plus robot.`],
+  [`Dashboard gia đình`, `Family dashboard`],
+  [`Theo dõi cảm xúc, tương tác và cảnh báo tổng quan.`, `Tracks emotions, interactions, and overview alerts.`],
+  [`Hỗ trợ ưu tiên`, `Priority support`],
+  [`Báo cáo tuần tự động và hỗ trợ 24/7.`, `Automatic weekly reports and 24/7 support.`],
+  [`Số tài khoản người thân muốn thêm`, `Number of family accounts to add`],
+  [`1 tài khoản`, `1 account`],
+  [`2 tài khoản`, `2 accounts`],
+  [`3 tài khoản trở lên`, `3 or more accounts`],
+  [`Khách hàng nói gì về H.R AI Care Plus`, `What customers say about H.R AI Care Plus`],
+  [`Cô Lan - Hà Nội`, `Ms. Lan - Hanoi`],
+  [`Báo cáo tuần giúp 3 anh em tôi ở 3 nơi khác nhau đều biết tình hình của mẹ mà không cần gọi liên tục hỏi thăm.`, `The weekly report helps my siblings and me stay updated on our mother even though we live in different places.`],
+  [`Anh Phúc - Cần Thơ`, `Mr. Phuc - Can Tho`],
+  [`Cảnh báo thông minh từng giúp gia đình tôi phát hiện sớm bố ít trò chuyện hơn bình thường, gọi điện kịp lúc.`, `The smart alert once helped my family notice that my father was talking less than usual, so we called him in time.`],
+
+  [`Truy cập dashboard để theo dõi tình trạng người thân.`, `Access the dashboard to monitor your loved one’s overall status.`],
+  [`Email`, `Email`],
+  [`Mật khẩu`, `Password`],
+  [`Để lại thông tin, đội ngũ H.R AI sẽ liên hệ tư vấn miễn phí cho gia đình bạn.`, `Leave your information and the H.R AI team will contact your family for a free consultation.`],
+  [`Gửi yêu cầu`, `Send request`],
+  [`✓ Đã gửi! Chúng tôi sẽ liên hệ sớm nhất.`, `✓ Sent successfully! We will contact you soon.`]
+]);
+
+const REVERSE_TRANSLATIONS = new Map(
+  Array.from(TEXT_TRANSLATIONS.entries()).map(([vi, en]) => [en, vi])
+);
+
+let currentLang = localStorage.getItem('hr_ai_lang') || 'vi';
+
+function normalizeText(text){
+  return text.replace(/\s+/g, ' ').trim();
+}
+
+function translateTextNodes(root, map){
+  const walker = document.createTreeWalker(
+    root,
+    NodeFilter.SHOW_TEXT,
+    {
+      acceptNode(node){
+        const parent = node.parentElement;
+        if(!parent) return NodeFilter.FILTER_REJECT;
+        if(['SCRIPT','STYLE','NOSCRIPT'].includes(parent.tagName)) return NodeFilter.FILTER_REJECT;
+        if(!normalizeText(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    }
+  );
+
+  const nodes = [];
+  while(walker.nextNode()){
+    nodes.push(walker.currentNode);
+  }
+
+  nodes.forEach(node=>{
+    const raw = node.nodeValue;
+    const key = normalizeText(raw);
+
+    if(map.has(key)){
+      const leading = raw.match(/^\s*/)[0];
+      const trailing = raw.match(/\s*$/)[0];
+      node.nodeValue = leading + map.get(key) + trailing;
+    }
+  });
+}
+
+function translateAttributes(map){
+  document.querySelectorAll('[placeholder]').forEach(el=>{
+    const key = normalizeText(el.getAttribute('placeholder') || '');
+    if(map.has(key)){
+      el.setAttribute('placeholder', map.get(key));
+    }
+  });
+
+  document.querySelectorAll('[aria-label]').forEach(el=>{
+    const key = normalizeText(el.getAttribute('aria-label') || '');
+    if(map.has(key)){
+      el.setAttribute('aria-label', map.get(key));
+    }
+  });
+}
+
+function setLanguage(lang){
+  const map = lang === 'en' ? TEXT_TRANSLATIONS : REVERSE_TRANSLATIONS;
+
+  translateTextNodes(document.body, map);
+  translateAttributes(map);
+
+  document.documentElement.lang = lang;
+  localStorage.setItem('hr_ai_lang', lang);
+  currentLang = lang;
+
+  const btn = document.getElementById('langToggle');
+  if(btn){
+    btn.textContent = lang === 'vi' ? 'EN' : 'VI';
+    btn.setAttribute('aria-label', lang === 'vi' ? 'Switch to English' : 'Đổi sang tiếng Việt');
+  }
+}
+
+const langToggle = document.getElementById('langToggle');
+
+if(langToggle){
+  langToggle.addEventListener('click', function(){
+    setLanguage(currentLang === 'vi' ? 'en' : 'vi');
+  });
+}
+
+setLanguage(currentLang);
 </script>
 </body>
 </html>
